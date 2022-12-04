@@ -4,7 +4,7 @@ services:
   web:
     restart: always
     build: .
-    command: bash -c "python3 manage.py collectstatic --no-input && python3 manage.py migrate && gunicorn --timeout=30 --workers=4 --bind :8000 main_core.wsgi:application"
+    command: bash -c "python3 manage.py collectstatic --no-input && python3 manage.py migrate && gunicorn --timeout=30 --workers=4 --bind 0.0.0.0:8000 main_core.wsgi:application"
     volumes:
       - .:/code
       - static-volume:/code/collected_static
@@ -30,10 +30,13 @@ services:
       - db_network
 
   nginx:
-    restart: always
     image: nginx:latest
+    restart: always
     ports:
-      - "80:8000"
+      # Develop
+      - "8000:8000"
+      # Product
+      # - "80:8000"
     volumes:
       - static-volume:/code/collected_static
       - ./config/nginx:/etc/nginx/conf.d
